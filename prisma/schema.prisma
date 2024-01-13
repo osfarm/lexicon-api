@@ -1,0 +1,849 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto(version: "1.3", schema: "postgis"), postgis(version: "2.5.5", schema: "postgis"), uuid_ossp(map: "uuid-ossp", version: "1.1", schema: "postgis")]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model datasource_credits {
+  datasource  String?   @db.VarChar
+  name        String?   @db.VarChar
+  url         String?   @db.VarChar
+  provider    String?   @db.VarChar
+  licence     String?   @db.VarChar
+  licence_url String?   @db.VarChar
+  updated_at  DateTime? @db.Timestamptz(6)
+
+  @@ignore
+}
+
+model intervention_model_items {
+  reference_name           String   @id @db.VarChar
+  procedure_item_reference String   @db.VarChar
+  article_reference        String?  @db.VarChar
+  indicator_name           String?  @db.VarChar
+  indicator_value          Decimal? @db.Decimal(19, 4)
+  indicator_unit           String?  @db.VarChar
+  intervention_model_id    String?  @db.VarChar
+
+  @@index([article_reference], map: "intervention_model_items_article_reference")
+  @@index([intervention_model_id], map: "intervention_model_items_intervention_model_id")
+  @@index([procedure_item_reference], map: "intervention_model_items_procedure_item_reference")
+  @@index([reference_name], map: "intervention_model_items_reference_name")
+}
+
+model intervention_models {
+  reference_name      String   @id @db.VarChar
+  name                Json?
+  category_name       Json?
+  number              String?  @db.VarChar
+  procedure_reference String   @db.VarChar
+  working_flow        Decimal? @db.Decimal(19, 4)
+  working_flow_unit   String?  @db.VarChar
+
+  @@index([name], map: "intervention_models_name")
+  @@index([procedure_reference], map: "intervention_models_procedure_reference")
+  @@index([reference_name], map: "intervention_models_reference_name")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model master_budgets {
+  activity_family    String  @db.VarChar
+  budget_category    String  @db.VarChar
+  variant            String  @db.VarChar
+  mode               String? @db.VarChar
+  proportionnal_key  String? @db.VarChar
+  repetition         Int
+  frequency          String  @db.VarChar
+  start_month        Int
+  quantity           Decimal @db.Decimal(8, 2)
+  unit_pretax_amount Decimal @db.Decimal(8, 2)
+  tax_rate           Decimal @db.Decimal(8, 2)
+  unit               String  @db.VarChar
+  direction          String  @db.VarChar
+
+  @@index([variant], map: "master_budgets_variant")
+  @@ignore
+}
+
+model master_chart_of_accounts {
+  id                      Int     @id
+  reference_name          String? @db.VarChar
+  previous_reference_name String? @db.VarChar
+  fr_pcga                 String? @db.VarChar
+  fr_pcg82                String? @db.VarChar
+  name                    Json?
+
+  @@index([reference_name], map: "master_chart_of_accounts_reference_name")
+}
+
+model master_crop_production_cap_codes {
+  cap_code      String   @db.VarChar
+  cap_label     String   @db.VarChar
+  production    String   @db.VarChar
+  cap_precision String?  @db.VarChar
+  cap_category  String?  @db.VarChar
+  is_seed       Boolean?
+  year          Int
+
+  @@id([cap_code, production, year])
+}
+
+model master_crop_production_cap_sna_codes {
+  reference_name String  @id @db.VarChar
+  nature         String  @db.VarChar
+  parent         String? @db.VarChar
+  translation_id String  @db.VarChar
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model master_crop_production_tfi_codes {
+  tfi_code       String  @db.VarChar
+  tfi_label      String  @db.VarChar
+  production     String? @db.VarChar
+  tfi_crop_group String? @db.VarChar
+  campaign       Int
+
+  @@ignore
+}
+
+model master_dimensions {
+  reference_name String @id @db.VarChar
+  symbol         String @db.VarChar
+  translation_id String @db.VarChar
+
+  @@index([reference_name], map: "master_dimensions_reference_name")
+}
+
+model master_doer_contracts {
+  reference_name             String   @id @db.VarChar
+  worker_variant             String   @db.VarChar
+  salaried                   Boolean?
+  contract_end               String?  @db.VarChar
+  legal_monthly_working_time Decimal  @db.Decimal(8, 2)
+  legal_monthly_offline_time Decimal  @db.Decimal(8, 2)
+  min_raw_wage_per_hour      Decimal  @db.Decimal(8, 2)
+  salary_charges_ratio       Decimal  @db.Decimal(8, 2)
+  farm_charges_ratio         Decimal  @db.Decimal(8, 2)
+  translation_id             String   @db.VarChar
+}
+
+model master_legal_positions {
+  code             String   @id @db.VarChar
+  name             Json?
+  nature           String   @db.VarChar
+  country          String   @db.VarChar
+  insee_code       String   @db.VarChar
+  fiscal_positions String[]
+}
+
+model master_packagings {
+  reference_name String  @id @db.VarChar
+  capacity       Decimal @db.Decimal(25, 10)
+  capacity_unit  String  @db.VarChar
+  translation_id String  @db.VarChar
+
+  @@index([reference_name], map: "master_packagings_reference_name")
+}
+
+model master_phenological_stages {
+  id              String  @id @db.VarChar
+  bbch_code       String  @db.VarChar
+  variety         String  @db.VarChar
+  biaggiolini     String? @db.VarChar
+  eichhorn_lorenz String? @db.VarChar
+  chasselas_date  String? @db.VarChar
+  label           Json?
+  description     Json?
+}
+
+model master_phytosanitary_prices {
+  id                       String   @id @db.VarChar
+  reference_name           String   @db.VarChar
+  reference_article_name   Int
+  unit_pretax_amount       Decimal  @db.Decimal(19, 4)
+  currency                 String   @db.VarChar
+  reference_packaging_name String   @db.VarChar
+  started_on               DateTime @db.Date
+  usage                    String   @db.VarChar
+}
+
+model master_prices {
+  id                           String   @id @db.VarChar
+  reference_name               String   @db.VarChar
+  reference_article_name       String   @db.VarChar
+  unit_pretax_amount           Decimal  @db.Decimal(19, 4)
+  currency                     String   @db.VarChar
+  reference_packaging_name     String   @db.VarChar
+  started_on                   DateTime @db.Date
+  variant_id                   String?  @db.VarChar
+  packaging_id                 String?  @db.VarChar
+  usage                        String   @db.VarChar
+  main_indicator               String?  @db.VarChar
+  main_indicator_unit          String?  @db.VarChar
+  main_indicator_minimal_value Decimal? @db.Decimal(19, 4)
+  main_indicator_maximal_value Decimal? @db.Decimal(19, 4)
+  working_flow_value           Decimal? @db.Decimal(19, 4)
+  working_flow_unit            String?  @db.VarChar
+  threshold_min_value          Decimal? @db.Decimal(19, 4)
+  threshold_max_value          Decimal? @db.Decimal(19, 4)
+
+  @@index([reference_article_name], map: "master_prices_reference_article_name")
+  @@index([reference_name], map: "master_prices_reference_name")
+  @@index([reference_packaging_name], map: "master_prices_reference_packaging_name")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model master_production_prices {
+  department_zone           String                  @db.VarChar
+  started_on                DateTime                @db.Date
+  nature                    String?                 @db.VarChar
+  price_duration            Unsupported("interval")
+  specie                    String                  @db.VarChar
+  waiting_price             Decimal                 @db.Decimal(8, 2)
+  final_price               Decimal                 @db.Decimal(8, 2)
+  currency                  String                  @db.VarChar
+  price_unit                String                  @db.VarChar
+  product_output_specie     String                  @db.VarChar
+  production_reference_name String?                 @db.VarChar
+  campaign                  Int?
+  organic                   Boolean?
+  label                     String?                 @db.VarChar
+
+  @@index([department_zone], map: "master_production_prices_department_zone")
+  @@index([product_output_specie], map: "master_production_prices_product_output_specie")
+  @@index([specie], map: "master_production_prices_specie")
+  @@index([started_on], map: "master_production_prices_started_on")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model master_production_start_states {
+  production String @db.VarChar
+  year       Int
+  key        String @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model master_production_yields {
+  department_zone String  @db.VarChar
+  specie          String  @db.VarChar
+  production      String  @db.VarChar
+  yield_value     Decimal @db.Decimal(8, 2)
+  yield_unit      String  @db.VarChar
+  campaign        Int
+
+  @@index([campaign], map: "master_production_yields_campaign")
+  @@index([production], map: "master_production_yields_production")
+  @@index([specie], map: "master_production_yields_specie")
+  @@ignore
+}
+
+model master_productions {
+  reference_name      String                   @id @db.VarChar
+  activity_family     String                   @db.VarChar
+  specie              String?                  @db.VarChar
+  usage               String?                  @db.VarChar
+  started_on          DateTime                 @db.Date
+  stopped_on          DateTime                 @db.Date
+  agroedi_crop_code   String?                  @db.VarChar
+  season              String?                  @db.VarChar
+  life_duration       Unsupported("interval")?
+  idea_botanic_family String?                  @db.VarChar
+  idea_specie_family  String?                  @db.VarChar
+  idea_output_family  String?                  @db.VarChar
+  color               String?                  @db.VarChar
+  translation_id      String                   @db.VarChar
+
+  @@index([activity_family], map: "master_productions_activity_family")
+  @@index([agroedi_crop_code], map: "master_productions_agroedi_crop_code")
+  @@index([reference_name], map: "master_productions_reference_name")
+  @@index([specie], map: "master_productions_specie")
+}
+
+model master_taxonomy {
+  reference_name String  @id @db.VarChar
+  parent         String? @db.VarChar
+  taxonomic_rank String? @db.VarChar
+  translation_id String  @db.VarChar
+
+  @@index([reference_name], map: "master_taxonomy_reference_name")
+}
+
+model master_translations {
+  id  String @id @db.VarChar
+  fra String @db.VarChar
+  eng String @db.VarChar
+}
+
+model master_units {
+  reference_name String   @id @db.VarChar
+  dimension      String   @db.VarChar
+  symbol         String   @db.VarChar
+  a              Decimal? @db.Decimal(25, 10)
+  d              Decimal? @db.Decimal(25, 10)
+  b              Decimal? @db.Decimal(25, 10)
+  translation_id String   @db.VarChar
+
+  @@index([reference_name], map: "master_units_reference_name")
+}
+
+model master_user_roles {
+  reference_name String   @id @db.VarChar
+  accesses       String[]
+  translation_id String   @db.VarChar
+}
+
+model master_variant_categories {
+  reference_name                 String   @id @db.VarChar
+  family                         String   @db.VarChar
+  fixed_asset_account            String?  @db.VarChar
+  fixed_asset_allocation_account String?  @db.VarChar
+  fixed_asset_expenses_account   String?  @db.VarChar
+  depreciation_percentage        Decimal? @db.Decimal(5, 2)
+  purchase_account               String?  @db.VarChar
+  sale_account                   String?  @db.VarChar
+  stock_account                  String?  @db.VarChar
+  stock_movement_account         String?  @db.VarChar
+  default_vat_rate               Decimal? @db.Decimal(5, 2)
+  payment_frequency_value        Int?
+  payment_frequency_unit         String?  @db.VarChar
+  pictogram                      String?  @db.VarChar
+  translation_id                 String   @db.VarChar
+
+  @@index([reference_name], map: "master_variant_categories_reference_name")
+}
+
+model master_variant_natures {
+  reference_name      String   @id @db.VarChar
+  family              String   @db.VarChar
+  population_counting String   @db.VarChar
+  frozen_indicators   String[]
+  variable_indicators String[]
+  abilities           String[]
+  variety             String   @db.VarChar
+  derivative_of       String?  @db.VarChar
+  pictogram           String?  @db.VarChar
+  translation_id      String   @db.VarChar
+
+  @@index([reference_name], map: "master_variant_natures_reference_name")
+}
+
+model master_variants {
+  reference_name String   @id @db.VarChar
+  family         String   @db.VarChar
+  category       String   @db.VarChar
+  nature         String   @db.VarChar
+  sub_family     String?  @db.VarChar
+  default_unit   String   @db.VarChar
+  target_specie  String?  @db.VarChar
+  specie         String?  @db.VarChar
+  indicators     Json?
+  pictogram      String?  @db.VarChar
+  name_tags      String[]
+  translation_id String   @db.VarChar
+
+  @@index([category], map: "master_variants_category")
+  @@index([nature], map: "master_variants_nature")
+  @@index([reference_name], map: "master_variants_reference_name")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model registered_agroedi_codes {
+  repository_id   Int
+  reference_id    Int
+  reference_code  String? @db.VarChar
+  reference_label String? @db.VarChar
+  ekylibre_scope  String? @db.VarChar
+  ekylibre_value  String? @db.VarChar
+
+  @@index([reference_code], map: "registered_agroedi_codes_reference_code")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model registered_agroedi_crops {
+  agroedi_code String  @db.VarChar
+  agroedi_name String  @db.VarChar
+  production   String? @db.VarChar
+
+  @@ignore
+}
+
+model registered_area_items {
+  id       String                   @id @db.VarChar
+  name     Json?
+  nature   String?                  @db.VarChar
+  point    Unsupported("geometry")?
+  shape    Unsupported("geometry")?
+  lines    Unsupported("geometry")?
+  centroid Unsupported("geometry")?
+
+  @@index([centroid], map: "registered_area_items_centroid", type: Gist)
+  @@index([id], map: "registered_area_items_id")
+  @@index([lines], map: "registered_area_items_lines", type: Gist)
+  @@index([nature], map: "registered_area_items_nature")
+  @@index([point], map: "registered_area_items_point", type: Gist)
+  @@index([shape], map: "registered_area_items_shape", type: Gist)
+}
+
+model registered_cadastral_buildings {
+  id             Int                      @id @default(autoincrement())
+  reference_name String?                  @db.VarChar
+  nature         String?                  @db.VarChar
+  shape          Unsupported("geometry")
+  centroid       Unsupported("geometry")?
+
+  @@index([centroid], map: "registered_cadastral_buildings_centroid", type: Gist)
+  @@index([id], map: "registered_cadastral_buildings_id")
+  @@index([reference_name], map: "registered_cadastral_buildings_reference_name")
+  @@index([shape], map: "registered_cadastral_buildings_shape", type: Gist)
+}
+
+model registered_cadastral_parcels {
+  id               String                   @id @db.VarChar
+  town_insee_code  String?                  @db.VarChar
+  section_prefix   String?                  @db.VarChar
+  section          String?                  @db.VarChar
+  work_number      String?                  @db.VarChar
+  net_surface_area Int?
+  shape            Unsupported("geometry")
+  centroid         Unsupported("geometry")?
+
+  @@index([centroid], map: "registered_cadastral_parcels_centroid", type: Gist)
+  @@index([id], map: "registered_cadastral_parcels_id")
+  @@index([section], map: "registered_cadastral_parcels_section")
+  @@index([section_prefix], map: "registered_cadastral_parcels_section_prefix")
+  @@index([shape], map: "registered_cadastral_parcels_shape", type: Gist)
+  @@index([town_insee_code], map: "registered_cadastral_parcels_town_insee_code")
+  @@index([work_number], map: "registered_cadastral_parcels_work_number")
+}
+
+model registered_cadastral_prices {
+  id                    Int                      @id @default(autoincrement())
+  mutation_id           String?                  @db.VarChar
+  mutation_date         DateTime?                @db.Date
+  mutation_reference    String?                  @db.VarChar
+  mutation_nature       String?                  @db.VarChar
+  cadastral_price       Decimal?                 @db.Decimal(14, 2)
+  cadastral_parcel_id   String?                  @db.VarChar
+  building_nature       String?                  @db.VarChar
+  building_area         Int?
+  cadastral_parcel_area Int?
+  address               String?                  @db.VarChar
+  postal_code           String?                  @db.VarChar
+  city                  String?                  @db.VarChar
+  department            String?                  @db.VarChar
+  centroid              Unsupported("geometry")?
+
+  @@index([cadastral_parcel_id], map: "registered_cadastral_prices_cadastral_parcel_id")
+  @@index([centroid], map: "registered_cadastral_prices_centroid", type: Gist)
+  @@index([department], map: "registered_cadastral_prices_department")
+  @@index([id], map: "registered_cadastral_prices_id")
+}
+
+model registered_enterprises {
+  establishment_number      String  @id @db.VarChar
+  french_main_activity_code String  @db.VarChar
+  name                      String? @db.VarChar
+  address                   String? @db.VarChar
+  postal_code               String? @db.VarChar
+  city                      String? @db.VarChar
+  country                   String? @db.VarChar
+
+  @@index([french_main_activity_code], map: "registered_enterprises_french_main_activity_code")
+  @@index([name], map: "registered_enterprises_name")
+}
+
+model registered_eu_market_prices {
+  id                        String    @id @db.VarChar
+  nature                    String?   @db.VarChar
+  category                  String?   @db.VarChar
+  specie                    String?   @db.VarChar
+  production_reference_name String?   @db.VarChar
+  sector_code               String?   @db.VarChar
+  product_code              String?   @db.VarChar
+  product_label             String?   @db.VarChar
+  product_description       String?   @db.VarChar
+  unit_value                Int?
+  unit_name                 String?   @db.VarChar
+  country                   String?   @db.VarChar
+  price                     Decimal?  @db.Decimal(8, 2)
+  start_date                DateTime? @db.Date
+  end_date                  DateTime? @db.Date
+
+  @@index([category], map: "registered_eu_market_prices_category")
+  @@index([id], map: "registered_eu_market_prices_id")
+  @@index([product_code], map: "registered_eu_market_prices_product_code")
+  @@index([sector_code], map: "registered_eu_market_prices_sector_code")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model registered_graphic_parcels {
+  id            String                   @db.VarChar
+  cap_crop_code String?                  @db.VarChar
+  city_name     String?                  @db.VarChar
+  shape         Unsupported("geometry")
+  centroid      Unsupported("geometry")?
+
+  @@index([centroid], map: "registered_graphic_parcels_centroid", type: Gist)
+  @@index([city_name], map: "registered_graphic_parcels_city_name")
+  @@index([id], map: "registered_graphic_parcels_id")
+  @@index([shape], map: "registered_graphic_parcels_shape", type: Gist)
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model registered_hourly_weathers {
+  station_id          String?                  @db.VarChar
+  started_at          DateTime?                @db.Timestamp(6)
+  mesured_delay       Unsupported("interval")?
+  average_temp        Decimal?                 @db.Decimal(19, 4)
+  min_temp            Decimal?                 @db.Decimal(19, 4)
+  max_temp            Decimal?                 @db.Decimal(19, 4)
+  rain                Decimal?                 @db.Decimal(19, 4)
+  max_wind_speed      Decimal?                 @db.Decimal(19, 4)
+  wind_direction      Decimal?                 @db.Decimal(19, 4)
+  frozen_duration     Decimal?                 @db.Decimal(19, 4)
+  humidity            Decimal?                 @db.Decimal(19, 4)
+  soil_state          String?                  @db.VarChar
+  pressure            Decimal?                 @db.Decimal(19, 4)
+  weather_description String?                  @db.VarChar
+
+  @@index([average_temp], map: "registered_hourly_weathers_average_temp")
+  @@index([max_wind_speed], map: "registered_hourly_weathers_max_wind_speed")
+  @@index([pressure], map: "registered_hourly_weathers_pressure")
+  @@index([rain], map: "registered_hourly_weathers_rain")
+  @@index([started_at], map: "registered_hourly_weathers_started_at")
+  @@index([station_id], map: "registered_hourly_weathers_station_id")
+  @@ignore
+}
+
+model registered_hydrographic_items {
+  id       String                   @id @db.VarChar
+  name     Json?
+  nature   String?                  @db.VarChar
+  point    Unsupported("geometry")?
+  shape    Unsupported("geometry")?
+  lines    Unsupported("geometry")?
+  centroid Unsupported("geometry")?
+
+  @@index([centroid], map: "registered_hydrographic_items_centroid", type: Gist)
+  @@index([lines], map: "registered_hydrographic_items_lines", type: Gist)
+  @@index([nature], map: "registered_hydrographic_items_nature")
+  @@index([point], map: "registered_hydrographic_items_point", type: Gist)
+  @@index([shape], map: "registered_hydrographic_items_shape", type: Gist)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model registered_natural_zones {
+  id     String                  @db.VarChar
+  name   String?                 @db.VarChar
+  nature String                  @db.VarChar
+  shape  Unsupported("geometry")
+
+  @@index([id], map: "registered_natural_zones_id")
+  @@index([nature], map: "registered_natural_zones_nature")
+  @@index([shape], map: "registered_natural_zones_shape", type: Gist)
+  @@ignore
+}
+
+model registered_phytosanitary_cropsets {
+  id              String   @id @db.VarChar
+  name            String   @db.VarChar
+  label           Json?
+  crop_names      String[]
+  crop_labels     Json?
+  record_checksum Int?
+
+  @@index([crop_names], map: "registered_phytosanitary_cropsets_crop_names")
+}
+
+model registered_phytosanitary_products {
+  id                           Int                      @id
+  reference_name               String                   @db.VarChar
+  name                         String                   @db.VarChar
+  other_names                  String[]
+  natures                      String[]
+  active_compounds             String[]
+  france_maaid                 String                   @db.VarChar
+  mix_category_codes           Int[]
+  in_field_reentry_delay       Unsupported("interval")?
+  state                        String                   @db.VarChar
+  started_on                   DateTime?                @db.Date
+  stopped_on                   DateTime?                @db.Date
+  allowed_mentions             Json?
+  restricted_mentions          String?                  @db.VarChar
+  operator_protection_mentions String?
+  firm_name                    String?                  @db.VarChar
+  product_type                 String?                  @db.VarChar
+  record_checksum              Int?
+
+  @@index([firm_name], map: "registered_phytosanitary_products_firm_name")
+  @@index([france_maaid], map: "registered_phytosanitary_products_france_maaid")
+  @@index([name], map: "registered_phytosanitary_products_name")
+  @@index([natures], map: "registered_phytosanitary_products_natures")
+  @@index([reference_name], map: "registered_phytosanitary_products_reference_name")
+}
+
+model registered_phytosanitary_risks {
+  product_id      Int
+  risk_code       String @db.VarChar
+  risk_phrase     String @db.VarChar
+  record_checksum Int?
+
+  @@id([product_id, risk_code])
+  @@index([product_id], map: "registered_phytosanitary_risks_product_id")
+}
+
+model registered_phytosanitary_symbols {
+  id          String  @id @db.VarChar
+  symbol_name String? @db.VarChar
+
+  @@index([id], map: "registered_phytosanitary_symbols_id")
+  @@index([symbol_name], map: "registered_phytosanitary_symbols_symbol_name")
+}
+
+model registered_phytosanitary_target_name_to_pfi_targets {
+  ephy_name                     String  @id @db.VarChar
+  pfi_id                        Int?
+  pfi_name                      String? @db.VarChar
+  default_pfi_treatment_type_id String? @db.VarChar
+
+  @@index([ephy_name], map: "registered_phytosanitary_target_name_to_pfi_targets_ephy_name")
+}
+
+model registered_phytosanitary_usages {
+  id                                String                   @id @db.VarChar
+  lib_court                         Int?
+  product_id                        Int
+  ephy_usage_phrase                 String                   @db.VarChar
+  crop                              Json?
+  crop_label_fra                    String?                  @db.VarChar
+  species                           String[]
+  target_name                       Json?
+  target_name_label_fra             String?                  @db.VarChar
+  description                       Json?
+  treatment                         Json?
+  dose_quantity                     Decimal?                 @db.Decimal(19, 4)
+  dose_unit                         String?                  @db.VarChar
+  dose_unit_name                    String?                  @db.VarChar
+  dose_unit_factor                  Float?                   @db.Real
+  pre_harvest_delay                 Unsupported("interval")?
+  pre_harvest_delay_bbch            Int?
+  applications_count                Int?
+  applications_frequency            Unsupported("interval")?
+  development_stage_min             Int?
+  development_stage_max             Int?
+  usage_conditions                  String?                  @db.VarChar
+  untreated_buffer_aquatic          Int?
+  untreated_buffer_arthropod        Int?
+  untreated_buffer_plants           Int?
+  decision_date                     DateTime?                @db.Date
+  state                             String                   @db.VarChar
+  extract_spray_volume_max_quantity String?                  @db.VarChar
+  extract_spray_volume_max_unit     String?                  @db.VarChar
+  spray_volume_max_quantity         Decimal?                 @db.Decimal(19, 4)
+  spray_volume_max_unit             String?                  @db.VarChar
+  spray_volume_max_unit_name        String?                  @db.VarChar
+  spray_volume_max_dose_quantity    Decimal?                 @db.Decimal(19, 4)
+  spray_volume_max_dose_unit        String?                  @db.VarChar
+  spray_volume_max_dose_unit_name   String?                  @db.VarChar
+  record_checksum                   Int?
+
+  @@index([product_id], map: "registered_phytosanitary_usages_product_id")
+  @@index([species], map: "registered_phytosanitary_usages_species")
+}
+
+model registered_postal_codes {
+  id                   String                   @id @db.VarChar
+  country              String                   @db.VarChar
+  code                 String                   @db.VarChar
+  city_name            String                   @db.VarChar
+  postal_code          String                   @db.VarChar
+  city_delivery_name   String?                  @db.VarChar
+  city_delivery_detail String?                  @db.VarChar
+  city_centroid        Unsupported("geometry")?
+  city_shape           Unsupported("geometry")?
+
+  @@index([city_centroid], map: "registered_postal_codes_centroid", type: Gist)
+  @@index([city_name], map: "registered_postal_codes_city_name")
+  @@index([country], map: "registered_postal_codes_country")
+  @@index([postal_code], map: "registered_postal_codes_postal_code")
+  @@index([city_shape], map: "registered_postal_codes_shape", type: Gist)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model registered_protected_water_zones {
+  id                  String                  @db.VarChar
+  administrative_zone String?                 @db.VarChar
+  creator_name        String?                 @db.VarChar
+  name                String?                 @db.VarChar
+  updated_on          DateTime?               @db.Date
+  shape               Unsupported("geometry")
+
+  @@index([id], map: "registered_protected_water_zones_id")
+  @@index([shape], map: "registered_protected_water_zones_shape", type: Gist)
+  @@ignore
+}
+
+model registered_quality_and_origin_signs {
+  id                     Int     @id
+  ida                    Int
+  geographic_area        String? @db.VarChar
+  fr_sign                String? @db.VarChar
+  eu_sign                String? @db.VarChar
+  product_human_name     Json?
+  product_human_name_fra String? @db.VarChar
+  reference_number       String? @db.VarChar
+}
+
+model registered_seed_varieties {
+  id                String    @id @db.VarChar
+  id_specie         String    @db.VarChar
+  specie_name       Json?
+  specie_name_fra   String?   @db.VarChar
+  variety_name      String?   @db.VarChar
+  registration_date DateTime? @db.Date
+
+  @@index([id], map: "registered_seed_varieties_id")
+  @@index([id_specie], map: "registered_seed_varieties_id_specie")
+}
+
+model registered_soil_available_water_capacities {
+  id                              String                  @id @db.VarChar
+  available_water_reference_value Int?
+  available_water_min_value       Decimal?                @db.Decimal(19, 4)
+  available_water_max_value       Decimal?                @db.Decimal(19, 4)
+  available_water_unit            String?                 @db.VarChar
+  available_water_label           String?                 @db.VarChar
+  shape                           Unsupported("geometry")
+
+  @@index([id], map: "registered_soil_available_water_capacities_id")
+  @@index([shape], map: "registered_soil_available_water_capacities_shape", type: Gist)
+}
+
+model registered_soil_depths {
+  id               String                  @id @db.VarChar
+  soil_depth_value Decimal?                @db.Decimal(19, 4)
+  soil_depth_unit  String?                 @db.VarChar
+  shape            Unsupported("geometry")
+
+  @@index([id], map: "registered_soil_depths_id")
+  @@index([shape], map: "registered_soil_depths_shape", type: Gist)
+}
+
+model registered_vine_varieties {
+  id           String   @id @db.VarChar
+  short_name   String   @db.VarChar
+  long_name    String?  @db.VarChar
+  category     String   @db.VarChar
+  fr_validated Boolean?
+  utilities    String[]
+  color        String?  @db.VarChar
+  custom_code  String?  @db.VarChar
+
+  @@index([id], map: "registered_vine_varieties_id")
+}
+
+model registered_weather_stations {
+  reference_name String                   @id @db.VarChar
+  country        String                   @db.VarChar
+  country_zone   String                   @db.VarChar
+  station_code   String                   @db.VarChar
+  station_name   String                   @db.VarChar
+  elevation      Int?
+  centroid       Unsupported("geometry")?
+
+  @@index([centroid], map: "registered_weather_stations_centroid", type: Gist)
+  @@index([country], map: "registered_weather_stations_country")
+  @@index([country_zone], map: "registered_weather_stations_country_zone")
+  @@index([reference_name], map: "registered_weather_stations_reference_name")
+}
+
+model technical_sequences {
+  reference_name            String  @id @db.VarChar
+  family                    String? @db.VarChar
+  production_reference_name String  @db.VarChar
+  production_system         String? @db.VarChar
+  translation_id            String  @db.VarChar
+
+  @@index([family], map: "technical_sequences_family")
+  @@index([production_reference_name], map: "technical_sequences_production_reference_name")
+  @@index([reference_name], map: "technical_sequences_reference_name")
+}
+
+model technical_workflow_procedure_items {
+  reference_name                  String   @id @db.VarChar
+  actor_reference                 String?  @db.VarChar
+  procedure_item_reference        String?  @db.VarChar
+  article_reference               String?  @db.VarChar
+  quantity                        Decimal? @db.Decimal(19, 4)
+  unit                            String?  @db.VarChar
+  procedure_reference             String   @db.VarChar
+  technical_workflow_procedure_id String   @db.VarChar
+
+  @@index([procedure_reference], map: "technical_workflow_procedure_items_procedure_reference")
+  @@index([reference_name], map: "technical_workflow_procedure_items_reference_name")
+  @@index([technical_workflow_procedure_id], map: "technical_workflow_procedure_items_technical_workflow_pro_id")
+}
+
+model technical_workflow_procedures {
+  reference_name        String  @id @db.VarChar
+  position              Int
+  name                  Json
+  repetition            Int?
+  frequency             String? @db.VarChar
+  period                String? @db.VarChar
+  bbch_stage            String? @db.VarChar
+  procedure_reference   String  @db.VarChar
+  technical_workflow_id String  @db.VarChar
+
+  @@index([procedure_reference], map: "technical_workflows_procedures_procedure_reference")
+  @@index([reference_name], map: "technical_workflows_procedures_reference_name")
+  @@index([technical_workflow_id], map: "technical_workflows_procedures_technical_workflow_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model technical_workflow_sequences {
+  technical_sequence_id String @db.VarChar
+  year_start            Int?
+  year_stop             Int?
+  technical_workflow_id String @db.VarChar
+
+  @@index([technical_sequence_id], map: "technical_workflow_sequences_technical_sequence_id")
+  @@index([technical_workflow_id], map: "technical_workflow_sequences_technical_workflow_id")
+  @@ignore
+}
+
+model technical_workflows {
+  reference_name            String  @id @db.VarChar
+  family                    String? @db.VarChar
+  production_reference_name String? @db.VarChar
+  production_system         String? @db.VarChar
+  start_day                 Int?
+  start_month               Int?
+  unit                      String? @db.VarChar
+  life_state                String? @db.VarChar
+  life_cycle                String? @db.VarChar
+  plant_density             Int?
+  translation_id            String  @db.VarChar
+
+  @@index([family], map: "technical_workflows_family")
+  @@index([production_reference_name], map: "technical_workflows_production_reference_name")
+  @@index([reference_name], map: "technical_workflows_reference_name")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model version {
+  version String? @db.VarChar
+
+  @@ignore
+}

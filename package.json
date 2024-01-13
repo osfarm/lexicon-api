@@ -6,12 +6,16 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
-    "elysia": "latest",
-    "pg": "^8.11.3"
+    "@prisma/client": "5.8.0",
+    "elysia": "^0.8.9",
+    "pg": "^8.11.3",
+    "pg-postgis-types": "^3.0.0"
   },
   "devDependencies": {
+    "@types/bun": "^1.0.1",
     "@types/pg": "^8.10.9",
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "prisma": "^5.8.0"
   },
   "module": "src/index.js",
   "author": "Brad Technology SAS <developers@brad.ag>",
