@@ -39,6 +39,8 @@ jobs:
            with:
              registry-type: public
              aws-region: us-east-1
+           env:
+             AWS_REGION: us-east-1
 
          - name: Build, tag, and push image to Amazon ECR Public
            id: build-image
