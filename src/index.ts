@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { Client } from "pg"
 
-const { LEXICON_DB_USER, LEXICON_DB_PWD, LEXICON_DB_HOST, LEXICON_DB_PORT, LEXICON_DB_DATABASE } = Bun.env
+const { LEXICON_DB_USER, LEXICON_DB_PWD, LEXICON_DB_HOST, LEXICON_DB_PORT, LEXICON_DB_DATABASE, API_PORT } = Bun.env
 
 const dbUrl = `postgresql://${LEXICON_DB_USER}:${LEXICON_DB_PWD}@${LEXICON_DB_HOST}:${LEXICON_DB_PORT}/${LEXICON_DB_DATABASE}?sslmode=verify-full`
 
@@ -10,7 +10,7 @@ const client = new Client(dbUrl);
 const app = new Elysia()
 .get("/:collection/:id", async ({ params: { collection, id }}) => await getRecord(collection, id))
 .get("/:collection/", async ({ params: { collection }}) => await getRecords(collection))
-.listen(3003)
+.listen(API_PORT)
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
