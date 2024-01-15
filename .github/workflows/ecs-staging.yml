@@ -1,4 +1,4 @@
-name: Deploy Staging Services to ECS
+name: Deploy Staging Service to ECS
 
 on:
    push:
