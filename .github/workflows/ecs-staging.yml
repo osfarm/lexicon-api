@@ -5,7 +5,7 @@ on:
       branches: ['main']
 
 env:
-   AWS_REGION: us-east-1 # eu-west-3
+   AWS_REGION: eu-west-3
    ECR_REPOSITORY: z1s6g0e3/lexicon-api
    ECS_CLUSTER: OSFarmStaging
 
@@ -38,6 +38,7 @@ jobs:
            uses: aws-actions/amazon-ecr-login@v2
            with:
              registry-type: public
+             aws-region: us-east-1
 
          - name: Build, tag, and push image to Amazon ECR Public
            id: build-image
@@ -56,6 +57,7 @@ jobs:
               task-definition: ${{ env.LEXICON_TASK_DEFINITION }}
               container-name: ${{ env.LEXICON_CONTAINER_NAME }}
               image: ${{ steps.build-image.outputs.image }}
+              
 
          - name: Deploy Lexicon task definition
            uses: aws-actions/amazon-ecs-deploy-task-definition@v1
