@@ -11,7 +11,7 @@ env:
 
    LEXICON_SERVICE: lora2db-orange
    LEXICON_TASK_DEFINITION: .aws/lexicon-api-staging.json
-   LEXICON_CONTAINER_NAME: lexicon-api-staging
+   LEXICON_CONTAINER_NAME: lexicon-api
 
 permissions:
    contents: read
