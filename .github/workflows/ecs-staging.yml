@@ -9,7 +9,7 @@ env:
    ECR_REPOSITORY: z1s6g0e3/lexicon-api
    ECS_CLUSTER: OSFarmStaging
 
-   LEXICON_SERVICE: lora2db-orange
+   LEXICON_SERVICE: lexicon-api
    LEXICON_TASK_DEFINITION: .aws/lexicon-api-staging.json
    LEXICON_CONTAINER_NAME: lexicon-api
 
