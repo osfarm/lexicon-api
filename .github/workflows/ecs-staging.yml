@@ -6,7 +6,7 @@ on:
 
 env:
    AWS_REGION: eu-west-3
-   ECR_REPOSITORY: osfarm
+   ECR_REPOSITORY: public.ecr.aws/z1s6g0e3/lexicon-api
    ECS_CLUSTER: OSFarmStaging
 
    LEXICON_SERVICE: lora2db-orange
