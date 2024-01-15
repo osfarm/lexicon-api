@@ -67,7 +67,6 @@ jobs:
               task-definition: ${{ steps.task-def-lexicon.outputs.task-definition }}
               service: ${{ env.LEXICON_SERVICE }}
               cluster: ${{ env.ECS_CLUSTER }}
-              aws-region: ${{ env.AWS_REGION }}
               wait-for-service-stability: true
            env:
              AWS_REGION: ${{ env.AWS_REGION }}
