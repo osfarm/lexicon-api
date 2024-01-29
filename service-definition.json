@@ -1,0 +1,107 @@
+{
+    "cluster": "",
+    "serviceName": "",
+    "taskDefinition": "",
+    "loadBalancers": [
+        {
+            "targetGroupArn": "",
+            "loadBalancerName": "",
+            "containerName": "",
+            "containerPort": 0
+        }
+    ],
+    "serviceRegistries": [
+        {
+            "registryArn": "",
+            "port": 0,
+            "containerName": "",
+            "containerPort": 0
+        }
+    ],
+    "desiredCount": 0,
+    "clientToken": "",
+    "launchType": "EC2",
+    "capacityProviderStrategy": [
+        {
+            "capacityProvider": "",
+            "weight": 0,
+            "base": 0
+        }
+    ],
+    "platformVersion": "",
+    "role": "",
+    "deploymentConfiguration": {
+        "deploymentCircuitBreaker": {
+            "enable": true,
+            "rollback": true
+        },
+        "maximumPercent": 0,
+        "minimumHealthyPercent": 0
+    },
+    "placementConstraints": [
+        {
+            "type": "distinctInstance",
+            "expression": ""
+        }
+    ],
+    "placementStrategy": [
+        {
+            "type": "random",
+            "field": ""
+        }
+    ],
+    "networkConfiguration": {
+        "awsvpcConfiguration": {
+            "subnets": [
+                ""
+            ],
+            "securityGroups": [
+                ""
+            ],
+            "assignPublicIp": "ENABLED"
+        }
+    },
+    "healthCheckGracePeriodSeconds": 0,
+    "schedulingStrategy": "REPLICA",
+    "deploymentController": {
+        "type": "ECS"
+    },
+    "tags": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "enableECSManagedTags": true,
+    "propagateTags": "TASK_DEFINITION",
+    "enableExecuteCommand": true,
+    "serviceConnectConfiguration": {
+        "enabled": true,
+        "namespace": "",
+        "services": [
+            {
+                "portName": "",
+                "discoveryName": "",
+                "clientAliases": [
+                    {
+                        "port": 0,
+                        "dnsName": ""
+                    }
+                ],
+                "ingressPortOverride": 0
+            }
+        ],
+        "logConfiguration": {
+            "logDriver": "json-file",
+            "options": {
+                "KeyName": ""
+            },
+            "secretOptions": [
+                {
+                    "name": "",
+                    "valueFrom": ""
+                }
+            ]
+        }
+    }
+}
