@@ -1,12 +1,14 @@
 import { Elysia } from "elysia";
 import { Client } from "pg"
 
-const { LEXICON_DB_USER, LEXICON_DB_PWD, LEXICON_DB_HOST, LEXICON_DB_PORT, LEXICON_DB_DATABASE, API_PORT = 3000 } = Bun.env
+const { LEXICON_DB_USER, LEXICON_DB_PWD, LEXICON_DB_HOST, LEXICON_DB_PORT, LEXICON_DB_DATABASE, API_PORT = 80 } = Bun.env
 
 const dbUrl = `postgresql://${LEXICON_DB_USER}:${LEXICON_DB_PWD}@${LEXICON_DB_HOST}:${LEXICON_DB_PORT}/${LEXICON_DB_DATABASE}?sslmode=verify-full`
 
 // create a CockroachDB client
 const client = new Client(dbUrl);
+
+await client.connect();
 
 const app = new Elysia()
 .get("/:collection/:id", async ({ params: { collection, id }}) => await getRecord(collection, id))
@@ -18,7 +20,6 @@ console.log(
 );
 
 const getRecord = async (collection: string, id: string): Promise<any> => {
-    await client.connect();
     try {
       const results = await client.query(`SELECT * FROM public.master_${collection} WHERE reference_name='${id}'`);
       if (results.rows.length === 0) {
@@ -27,13 +28,10 @@ const getRecord = async (collection: string, id: string): Promise<any> => {
       return results.rows[0]
     } catch (err) {
       console.error("error executing query:", err);
-    } finally {
-      client.end();
     }
 }
 
 const getRecords = async (collection: string): Promise<any> => {
-  await client.connect();
   try {
     const results = await client.query(`SELECT * FROM public.master_${collection} LIMIT 10`);
     if (results.rows.length === 0) {
@@ -42,7 +40,5 @@ const getRecords = async (collection: string): Promise<any> => {
     return results.rows
   } catch (err) {
     console.error("error executing query:", err);
-  } finally {
-    client.end();
   }
 }
