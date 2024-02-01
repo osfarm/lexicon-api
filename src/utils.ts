@@ -1,3 +1,4 @@
+import log from './logger'
 import { Client } from "pg";
 import { MapType, QueryType } from "./types";
 
@@ -9,7 +10,7 @@ export const getRecord = async (client: Client, collection: string, id: string):
     }
     return results.rows[0]
   } catch (err) {
-    console.error("error executing query:", err);
+    log.error("error executing query:", err);
   }
 }
 
@@ -26,16 +27,16 @@ export const getRecords = async (client: Client, collection: string, qs: QueryTy
       baseQuery += `WHERE reference_name LIKE '%${qs.q}%' `
     }
     const query = `${baseQuery} LIMIT ${batch} OFFSET ${offset}`
-    console.log(`Executing query ${query}`);
+    log.debug(`Executing query ${query}`);
     const results = await client.query(query);
     if (results.rows.length === 0) {
       return null
     }
     const count = await client.query(baseQuery.replace('*', 'COUNT(*) AS total'));
     const max = parseInt(count.rows[0].total)
-    return { data: parseRows(results.rows, productionsMap), offset, batch, q, total: results.rowCount, max }
+    return { data: parseRows(results.rows, productionsMap), meta: { offset, batch, q, total: results.rowCount, max } }
   } catch (err) {
-    console.error("error executing query: ", err);
+    log.error("error executing query: ", err);
     throw new Error()
   }
 }

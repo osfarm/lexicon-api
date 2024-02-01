@@ -1,9 +1,10 @@
 import { Elysia, InternalServerError, NotFoundError } from "elysia"
-import { bearer } from '@elysiajs/bearer'
 import { swagger } from '@elysiajs/swagger'
 import { serverTiming } from '@elysiajs/server-timing'
+import { staticPlugin } from '@elysiajs/static'
 import { Client } from "pg"
-import { getRecords } from "./utils"
+import { getRecord, getRecords } from "./utils"
+import log from './logger'
 
 const { LEXICON_DB_USER, LEXICON_DB_PWD, LEXICON_DB_HOST, LEXICON_DB_PORT, LEXICON_DB_DATABASE, API_PORT = 80 } = Bun.env
 
@@ -13,10 +14,9 @@ const dbUrl = `postgresql://${LEXICON_DB_USER}:${LEXICON_DB_PWD}@${LEXICON_DB_HO
 const client = new Client(dbUrl);
 
 await client.connect();
-//await client.query(`SET search_path = 'public'`)
 
 const app = new Elysia()
-.use(bearer())
+.use(staticPlugin())
 .use(serverTiming())
 .use(swagger({
   documentation: {
@@ -36,7 +36,8 @@ const app = new Elysia()
       return 'Not Found :('
   }
 })
-.get("productions", async ({ bearer, set, query }) => {
+.get('/', () => "coucou")
+.get("productions", async ({ set, query }) => {
   if (!query.apikey) {
     set.status = 401
     set.headers[
@@ -62,10 +63,10 @@ const app = new Elysia()
     tags: ['References']
   }})
 
-.get("/productions/:id", async ({ params: { id }}) => await getRecord('productions', id))
+.get("/productions/:id", async ({ params: { id }}) => await getRecord(client, 'productions', id))
 .listen(API_PORT)
 
-console.log(
+log.debug(
   `API server running at ${app.server?.hostname}:${app.server?.port}`
 );
 
