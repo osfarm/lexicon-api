@@ -6,6 +6,8 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/bearer": "^0.8.0",
+    "@elysiajs/server-timing": "^0.8.0",
     "@elysiajs/swagger": "^0.8.5",
     "elysia": "latest",
     "pg": "^8.11.3"
